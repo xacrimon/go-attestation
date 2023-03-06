@@ -85,24 +85,24 @@ func tbsConvertVersion(info tbsDeviceInfo) (TPMVersion, error) {
 }
 
 func openTPM(tpm probedTPM) (*TPM, error) {
-	pcp, err := openPCP()
+	rwc, err := tpm2.OpenTPM()
 	if err != nil {
-		return nil, fmt.Errorf("openPCP() failed: %v", err)
+		return nil, err
 	}
 
-	info, err := pcp.TPMInfo()
-	if err != nil {
-		return nil, fmt.Errorf("TPMInfo() failed: %v", err)
-	}
-	vers, err := tbsConvertVersion(info.TBSInfo)
-	if err != nil {
-		return nil, fmt.Errorf("tbsConvertVersion(%v) failed: %v", info.TBSInfo.TPMVersion, err)
-	}
-
-	return &TPM{tpm: &windowsTPM{
-		pcp:     pcp,
-		version: vers,
+	return &TPM{tpm: &wrappedTPM20{
+		interf: interf,
+		rwc:    &windowsCmdChannel{rwc},
 	}}, nil
+}
+
+type windowsCmdChannel struct {
+	io.ReadWriteCloser
+}
+
+// MeasurementLog implements CommandChannelTPM20.
+func (cc *windowsCmdChannel) MeasurementLog() ([]byte, error) {
+	return (nil, nil)
 }
 
 func (t *windowsTPM) tpmVersion() TPMVersion {
