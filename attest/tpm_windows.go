@@ -30,6 +30,7 @@ import (
 	"math/big"
 
 	tpm1 "github.com/google/go-tpm/tpm"
+	"github.com/google/go-tpm/tpm2"
 	tpmtbs "github.com/google/go-tpm/tpmutil/tbs"
 	"golang.org/x/sys/windows"
 )
@@ -85,6 +86,7 @@ func tbsConvertVersion(info tbsDeviceInfo) (TPMVersion, error) {
 }
 
 func openTPM(tpm probedTPM) (*TPM, error) {
+	interf := TPMInterfaceDirect
 	rwc, err := tpm2.OpenTPM()
 	if err != nil {
 		return nil, err
