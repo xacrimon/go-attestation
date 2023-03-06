@@ -102,7 +102,7 @@ type windowsCmdChannel struct {
 
 // MeasurementLog implements CommandChannelTPM20.
 func (cc *windowsCmdChannel) MeasurementLog() ([]byte, error) {
-	return (nil, nil)
+	return nil, nil
 }
 
 func (t *windowsTPM) tpmVersion() TPMVersion {
